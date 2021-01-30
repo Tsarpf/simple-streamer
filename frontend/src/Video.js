@@ -25,12 +25,13 @@ class Video extends React.Component {
             poster: "//vjs.zencdn.net/v/oceans.png"
         }
         return (
-            <VideoPlayer
-                className='video'
-                controls={true}
-                src={state.src}
-                onReady={this.onPlayerReady.bind(this)}
-            />
+            this.props.streamOn ? <VideoPlayer
+                    className='video'
+                    controls={true}
+                    src={state.src}
+                    onReady={this.onPlayerReady.bind(this)}
+                />
+            : <div> Stream not on currently </div>
         )
 
     }

@@ -3,8 +3,9 @@ const express = require('express')
 const app = express()
 const http = require('http').Server(app)
 const io = require('socket.io')(http)
+const chokidar = require('chokidar')
 
-const {port} = require('./resources/settings.json')
+const {port, hlsPath} = require('./resources/settings.json')
 
 const {getNewestMessages, insertMessage} = require('./db')
 
@@ -13,6 +14,8 @@ const {getNewestMessages, insertMessage} = require('./db')
 //})
 
 const backlogSize = 100
+
+
 
 const initMessage = [{ time: Date.now(), user: 'server', message: 'channel created' }]
 io.sockets.on('connection', function(socket) {
@@ -68,6 +71,19 @@ io.sockets.on('connection', function(socket) {
         io.emit('chat_message', {time, user: socket.user, message})
     })
 })
+
+const watcher = chokidar.watch(hlsPath, {
+    ignored: /^\./, 
+    persistent: true,
+    interval: 1000,
+});
+
+watcher
+    .on('add', function (path) {
+        console.log('File', path, 'has been added');
+        io.sockets.emit('stream_start', true)
+    })
+    .on('error', function (error) { console.error('Error happened', error); })
 
 
 const server = http.listen(port, () => {

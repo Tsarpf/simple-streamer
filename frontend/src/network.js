@@ -36,6 +36,12 @@ function fetchMessages() {
     })
 }
 
+function receiveStart(handler) {
+    socket.on('stream_start', someBool => {
+        handler()
+    })
+}
+
 function receiveMessage(handler) {
     socket.on('chat_message', message => {
         handler(message)
@@ -54,4 +60,5 @@ export {
     fetchMessages,
     sendMessage,
     receiveMessage,
+    receiveStart
 }
